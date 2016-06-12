@@ -17,22 +17,42 @@
         padding: 0;
       }
       #map {
-        height: 80%;
+        height: 800px;
+        width:100%;
+
     }
    </style>
 
   </head>
   <body>
-    <h1>Central Florida Area Theme Parks</h1>
 
-    <div id ='map'> </div>
+  <div class="container-fluid">
 
-    <form>  <input type="search"   placeholder=" Filter Locations" data-bind="textInput: userInput, event: {keyup: markerFilter}">
-    </form>
+    <div class="row">
+       <div class="col-sm-2">
+          <h4> Central Florida Theme Parks</h4>
+          <hr>
+          <div class="input-group">
+             <form role="form">
+               <input type="search"   placeholder=" Filter Locations" data-bind="textInput: userInput, event: {keyup: markerFilter}">
+             </form>
+          </div>
 
-    <ul data-bind= "foreach: markerInfo">
+          <ul data-bind= "foreach: markerInfo">
             <li data-bind="text: name"></li>
-    </ul>
+          </ul>
+       </div>
+
+      <div class="col-sm-10">
+          <div id ='map'>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJJk3O9eGR57U6cz0bSPDf6B_ekG-thRw&callback=initMap"async defer></script>
+
+          </div>
+      </div>
+
+    </div>
+
+  </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
@@ -40,8 +60,6 @@
     <script src="js/bootstrap.min.js"></script>
     <script type="text/javascript"  src='js/knockout-3.4.0.js'></script>
     <script type="text/javascript" src="js/app.js"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJJk3O9eGR57U6cz0bSPDf6B_ekG-thRw&callback=initMap"async defer></script>
-
 
   </body>
 </html>

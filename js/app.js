@@ -25,7 +25,7 @@ var parkData = [
     lat:" 28.476747 ",
     lng:"-81.473222",
     address:"  ",
-    name:" Universal Studios"
+    name:"Universal Studios"
 
 },
 
@@ -34,7 +34,7 @@ var parkData = [
     lat:"28.033631",
     lng:"-82.420659",
     address:"  ",
-    name:" Busch Gardens"
+    name:"Busch Gardens"
 
 },
 
@@ -43,7 +43,7 @@ var parkData = [
     lat:" 28.460525  ",
     lng:" -81.462871 ",
     address:"  ",
-    name:" Wet and Wild"
+    name:"Wet and Wild"
 
 }
 
@@ -62,16 +62,17 @@ var mapOptions = {
 
  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-infoWindow = new google.maps.InfoWindow({
-                 content: " test data "
+infoWindow = new google.maps.InfoWindow();
+                 //content: " test data "
 
-}); //close infoWindow
+//}); //close infoWindow
 
 //This will add these two needed properties to each of the park data above
 parkData.forEach(function(place){
 
      place.map = map;
      place.position = new google.maps.LatLng(place.lat,place.lng);
+     place.title = place.name;
 
 }); //close parkData
 
@@ -83,9 +84,12 @@ parkData.forEach(function(place){
 var ViewModel = function() {
 
 	var self = this;
+	var bounds = new google.maps.LatLngBounds();
+
 
 // contains all marker objects
     self.allParks = [];
+
 
 // this observable will track what the user enters in text field box
     self.userInput = ko.observable('');
@@ -102,11 +106,20 @@ var ViewModel = function() {
 //create markers and place on map
 self.createMarkers = function() {
 
+  //var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < self.markerInfo().length; i++) {
 
-           var marker = new google.maps.Marker( self.markerInfo()[i]);
+        var marker = new google.maps.Marker(self.markerInfo()[i]);
 
-      self.allParks.push(marker);
+        self.allParks.push(marker);
+        bounds.extend(self.markerInfo()[i].position);
+
+        marker.addListener('click', function(map,marker) {
+        	return function() {
+        		infoWindow.setContent('Info for');
+        	    infoWindow.open(map,marker);
+        };
+    } (map,marker));
 
   };//close for loop
 
@@ -129,7 +142,7 @@ self.markerFilter = function() {
 	self.allParks = [];
 	parkData.forEach(function(place) {
 
-      if (place.title.toLowerCase().indexOf(searchInput) !== -1) {
+      if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
 
       	     self.markerInfo.push(place);
       }
@@ -141,6 +154,13 @@ self.markerFilter = function() {
 
 
 };//close markerFilter
+
+
+//listen for resizing if window and adjust map bounds
+    window.addEventListener('resize', function(e) {
+    map.fitBounds( bounds)
+    });
+
 
 
 }; //end of ViewModel function
