@@ -100,26 +100,53 @@ var ViewModel = function() {
 // loading array with the park information
     parkData.forEach(function(place) {
         self.markerInfo.push(place);
-
-    });//close parkData
+});//close parkData
 
 //create markers and place on map
 self.createMarkers = function() {
 
+
+    var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather";
+    openWeatherMapUrl += '?' + $.param({
+      'lat': "28.417",
+      'lon': "-81.581",
+      'units': "imperial",
+      'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
+
+
+      }); //close openWeatherMapURL
+
+      console.log(openWeatherMapUrl);
+
+      $.getJSON(openWeatherMapUrl, function(data) {
+
+        weather=data;
+      	console.log(weather.main);
+      });
+
+
+
+
   //var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < self.markerInfo().length; i++) {
 
-        var marker = new google.maps.Marker(self.markerInfo()[i]);
+        var data = self.markerInfo()[i];
+        var myLatlng = self.markerInfo()[i].position;
+        var marker = new google.maps.Marker(data);
 
         self.allParks.push(marker);
-        bounds.extend(self.markerInfo()[i].position);
+        bounds.extend(myLatlng);
 
-        marker.addListener('click', function(map,marker) {
-        	return function() {
-        		infoWindow.setContent('Info for');
+
+
+        (function (marker, data){
+
+        google.maps.event.addListener(marker, "click", function(e) {
+
+        		infoWindow.setContent(weather.main.temp.toString());
         	    infoWindow.open(map,marker);
-        };
-    } (map,marker));
+        });
+    }) (marker,data);
 
   };//close for loop
 
