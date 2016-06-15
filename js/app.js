@@ -3,7 +3,7 @@ var parkData = [
 {
 
     lat:"28.417823",
-    lng:"-81.581203 ",
+    lng:"-81.581203",
     address:"  ",
     name:"DisneyWorld"
 
@@ -22,7 +22,7 @@ var parkData = [
 
 {
 
-    lat:" 28.476747 ",
+    lat:"28.476747",
     lng:"-81.473222",
     address:"  ",
     name:"Universal Studios"
@@ -40,8 +40,8 @@ var parkData = [
 
 {
 
-    lat:" 28.460525  ",
-    lng:" -81.462871 ",
+    lat:"28.460525",
+    lng:"-81.462871",
     address:"  ",
     name:"Wet and Wild"
 
@@ -81,6 +81,7 @@ parkData.forEach(function(place){
 }; //close of InitMap
 
 
+
 var ViewModel = function() {
 
 	var self = this;
@@ -94,8 +95,11 @@ var ViewModel = function() {
 // this observable will track what the user enters in text field box
     self.userInput = ko.observable('');
 
-//this observable array contacin the information for all the parks
+//this observable array contains the information for all the parks
     self.markerInfo = ko.observableArray();
+
+// This observable array contains all the weather data returned from API call
+    self.weatherData = ko.observableArray();
 
 // loading array with the park information
     parkData.forEach(function(place) {
@@ -106,23 +110,21 @@ var ViewModel = function() {
 self.createMarkers = function() {
 
 
-    var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather";
-    openWeatherMapUrl += '?' + $.param({
-      'lat': "28.417",
-      'lon': "-81.581",
-      'units': "imperial",
-      'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
+    //var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
+    //openWeatherMapUrl += $.param({
+    //  'lat': self.markerInfo()[0].lat,
+     // 'lon': self.markerInfo()[0].lng,
+      //'units': "imperial",
+     // 'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
 
 
-      }); //close openWeatherMapURL
+     // }); //close openWeatherMapURL
 
-      console.log(openWeatherMapUrl);
+      //$.getJSON(openWeatherMapUrl, function(data) {
 
-      $.getJSON(openWeatherMapUrl, function(data) {
-
-        weather=data;
-      	console.log(weather.main);
-      });
+       // weather=data;
+      	//console.log(weather.main.temp);
+      //});
 
 
 
@@ -137,18 +139,37 @@ self.createMarkers = function() {
         self.allParks.push(marker);
         bounds.extend(myLatlng);
 
+       var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
+
+       openWeatherMapUrl += $.param({
+      'lat': self.markerInfo()[i].lat,
+      'lon': self.markerInfo()[i].lng,
+      'units': "imperial",
+      'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
+       });//close openWeatherMapurl
+
+
+      $.getJSON(openWeatherMapUrl, function(data) {
+         self.weatherData().push(data);
+         weather = self.weatherData();
+         console.log(weather);
+         console.log(i);
+
+      });//close getJSON
+
 
 
         (function (marker, data){
 
         google.maps.event.addListener(marker, "click", function(e) {
-
-        		infoWindow.setContent(weather.main.temp.toString());
+                //console.log(weather);
+        		infoWindow.setContent();
         	    infoWindow.open(map,marker);
         });
     }) (marker,data);
 
   };//close for loop
+
 
 
 };//close createMarkes
@@ -191,3 +212,4 @@ self.markerFilter = function() {
 
 
 }; //end of ViewModel function
+
