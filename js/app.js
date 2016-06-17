@@ -67,12 +67,13 @@ infoWindow = new google.maps.InfoWindow();
 
 //}); //close infoWindow
 
-//This will add these two needed properties to each of the park data above
+//This will add these needed properties to each of the park data above
 parkData.forEach(function(place){
 
      place.map = map;
      place.position = new google.maps.LatLng(place.lat,place.lng);
      place.title = place.name;
+     place.animation = google.maps.Animation.DROP;
 
 }); //close parkData
 
@@ -87,6 +88,8 @@ var ViewModel = function() {
 	var self = this;
 	var bounds = new google.maps.LatLngBounds();
 
+    //var openWeatherMapurl ='';
+
 
 // contains all marker objects
     self.allParks = [];
@@ -99,78 +102,89 @@ var ViewModel = function() {
     self.markerInfo = ko.observableArray();
 
 // This observable array contains all the weather data returned from API call
-    self.weatherData = ko.observableArray();
+    //self.weatherData = ko.observableArray();
 
 // loading array with the park information
     parkData.forEach(function(place) {
         self.markerInfo.push(place);
 });//close parkData
 
-//create markers and place on map
+
+
+
+             function toggleBounce(marker){
+               if (marker.getAnimation() !==null) {
+                 marker.setAnimation(null);
+              } else {
+
+             	marker.setAnimation(google.maps.Animation.BOUNCE);
+             	setTimeout(function(){marker.setAnimation(null); }, 1600);
+
+
+             };
+
+            };//togglBounce
+
+
+    function generateContent(x,marker) {
+
+
+      return function Content(){
+
+             var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
+             openWeatherMapUrl += $.param({
+            'lat': self.markerInfo()[x].lat,
+            'lon': self.markerInfo()[x].lng,
+            'units': "imperial",
+            'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
+
+           }); //close openWeatherMapURL
+
+
+
+             $.getJSON(openWeatherMapUrl, function(info) {
+
+             	var temp = info.main.temp;
+             	var condition = info.weather[0].description;
+             	var humidity = info.main.humidity;
+             	var windowContent = ('<p><b>Current Temperature is:</b> ' + temp.toString() +
+                                      'F </P>' +'<p><b> Current Humidity is:</b> ' + humidity.toString() +
+                                      '% </p>' +'<p><b> Weather Conditions is:</b> ' + condition
+             		                 );
+
+             toggleBounce(marker);
+
+             console.log(windowContent);
+             infoWindow.setContent(windowContent);
+        	 infoWindow.open(map,marker);
+             //toggleBounce(marker);
+
+             });//close getJSON
+
+
+       };//close Content
+
+
+     }; //close generateContent
+
+
 self.createMarkers = function() {
 
 
-    //var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
-    //openWeatherMapUrl += $.param({
-    //  'lat': self.markerInfo()[0].lat,
-     // 'lon': self.markerInfo()[0].lng,
-      //'units': "imperial",
-     // 'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
 
-
-     // }); //close openWeatherMapURL
-
-      //$.getJSON(openWeatherMapUrl, function(data) {
-
-       // weather=data;
-      	//console.log(weather.main.temp);
-      //});
-
-
-
-
-  //var bounds = new google.maps.LatLngBounds();
   for (var i = 0; i < self.markerInfo().length; i++) {
 
         var data = self.markerInfo()[i];
-        var myLatlng = self.markerInfo()[i].position;
+        var myLatlng = data.position;
         var marker = new google.maps.Marker(data);
 
         self.allParks.push(marker);
         bounds.extend(myLatlng);
 
-       var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
-
-       openWeatherMapUrl += $.param({
-      'lat': self.markerInfo()[i].lat,
-      'lon': self.markerInfo()[i].lng,
-      'units': "imperial",
-      'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
-       });//close openWeatherMapurl
+        google.maps.event.addListener(marker, "click", generateContent(i,marker));
 
 
-      $.getJSON(openWeatherMapUrl, function(data) {
-         self.weatherData().push(data);
-         weather = self.weatherData();
-         console.log(weather);
-         console.log(i);
-
-      });//close getJSON
-
-
-
-        (function (marker, data){
-
-        google.maps.event.addListener(marker, "click", function(e) {
-                //console.log(weather);
-        		infoWindow.setContent();
-        	    infoWindow.open(map,marker);
-        });
-    }) (marker,data);
-
-  };//close for loop
-
-
+    };//close for loop
 
 };//close createMarkes
 
