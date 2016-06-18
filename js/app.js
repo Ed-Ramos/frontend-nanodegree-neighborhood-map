@@ -188,9 +188,9 @@ self.displayInfo = function(marker) {
  var index = self.markerInfo().indexOf(marker);
  var markerObject = self.allParks[index];
 
- self.generateContent(index,markerObject);
+ //self.generateContent(index,markerObject);
 
- self.toggleBounce(markerObject);
+ google.maps.event.trigger(markerObject, "click", self.generateContent(index,markerObject));
 
  console.log( markerObject.name+  " was clicked " + "the index is "+index);
 

@@ -19,8 +19,26 @@
       #map {
         height: 800px;
         width:100%;
-
     }
+
+      .list-view li:hover {
+        background: rgba(20,230,245,.4);
+        cursor:pointer;
+      }
+
+      .list-view li {
+
+       padding-bottom: 5px;
+       padding-top: 5px;
+       margin-left: -40px;
+      }
+
+      .input-group {
+
+        padding-bottom: 10px;
+      }
+
+
    </style>
 
   </head>
@@ -38,9 +56,11 @@
              </form>
           </div>
 
-          <ul data-bind= "foreach: markerInfo">
+          <div class="list-view">
+          <ul style= "list-style-type:none" data-bind= "foreach: markerInfo">
             <li data-bind="text: name, click:$parent.displayInfo"></li>
           </ul>
+          </div>
        </div>
 
       <div class="col-sm-10">
