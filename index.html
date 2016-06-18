@@ -39,7 +39,7 @@
           </div>
 
           <ul data-bind= "foreach: markerInfo">
-            <li data-bind="text: name"></li>
+            <li data-bind="text: name, click:$parent.displayInfo"></li>
           </ul>
        </div>
 

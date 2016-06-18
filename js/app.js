@@ -50,22 +50,21 @@ var parkData = [
 ];
 
 
-//var  map;
+var map;
+var infoWindow;
 
-initMap = function(){
+var initMap = function(){
 
 var mapOptions = {
       center: new google.maps.LatLng(28.378110,-81.569366),
-      zoom: 10
+      zoom: 10,
 
 }; //close mapOptions
 
  map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-infoWindow = new google.maps.InfoWindow();
-                 //content: " test data "
+ infoWindow = new google.maps.InfoWindow();
 
-//}); //close infoWindow
 
 //This will add these needed properties to each of the park data above
 parkData.forEach(function(place){
@@ -94,7 +93,6 @@ var ViewModel = function() {
 // contains all marker objects
     self.allParks = [];
 
-
 // this observable will track what the user enters in text field box
     self.userInput = ko.observable('');
 
@@ -110,23 +108,20 @@ var ViewModel = function() {
 });//close parkData
 
 
+     self.toggleBounce=function(marker){
+         if (marker.getAnimation() !==null) {
+             marker.setAnimation(null);
+         } else {
+
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function(){marker.setAnimation(null); }, 1600);
+
+             }; //close else
+
+            };//close togglBounce
 
 
-             function toggleBounce(marker){
-               if (marker.getAnimation() !==null) {
-                 marker.setAnimation(null);
-              } else {
-
-             	marker.setAnimation(google.maps.Animation.BOUNCE);
-             	setTimeout(function(){marker.setAnimation(null); }, 1600);
-
-
-             };
-
-            };//togglBounce
-
-
-    function generateContent(x,marker) {
+     self.generateContent = function(x,marker) {
 
 
       return function Content(){
@@ -152,18 +147,15 @@ var ViewModel = function() {
                                       '% </p>' +'<p><b> Weather Conditions is:</b> ' + condition
              		                 );
 
-             toggleBounce(marker);
+                self.toggleBounce(marker);
 
-             console.log(windowContent);
-             infoWindow.setContent(windowContent);
-        	 infoWindow.open(map,marker);
-             //toggleBounce(marker);
+                infoWindow.setContent(windowContent);
+        	    infoWindow.open(map,marker);
 
-             });//close getJSON
+                });//close getJSON
 
 
        };//close Content
-
 
      }; //close generateContent
 
@@ -181,7 +173,7 @@ self.createMarkers = function() {
         self.allParks.push(marker);
         bounds.extend(myLatlng);
 
-        google.maps.event.addListener(marker, "click", generateContent(i,marker));
+        google.maps.event.addListener(marker, "click", self.generateContent(i,marker));
 
 
     };//close for loop
@@ -190,6 +182,20 @@ self.createMarkers = function() {
 
 self.createMarkers();
 
+
+self.displayInfo = function(marker) {
+
+ var index = self.markerInfo().indexOf(marker);
+ var markerObject = self.allParks[index];
+
+ self.generateContent(index,markerObject);
+
+ self.toggleBounce(markerObject);
+
+ console.log( markerObject.name+  " was clicked " + "the index is "+index);
+
+
+}; //close displayInfo
 
 
 self.markerFilter = function() {
@@ -226,4 +232,5 @@ self.markerFilter = function() {
 
 
 }; //end of ViewModel function
+
 
