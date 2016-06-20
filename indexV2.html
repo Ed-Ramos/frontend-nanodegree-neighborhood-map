@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Central Florida Attractions</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      html, body, .mainview{
+        height: 100%;
+        margin: 30px;
+        padding: 0;
+        width: 100%;
+      }
+      #map {
+        height: 800px;
+        width:auto;
+
+    }
+
+      .list-view li:hover {
+        background: rgba(20,230,245,.4);
+        cursor:pointer;
+      }
+
+      .list-view li {
+
+       padding-bottom: 5px;
+       padding-top: 5px;
+       margin-left: -40px;
+       border-style: solid;
+       border-width: 1px;
+       width: auto;
+      }
+
+      .input-group {
+        padding-bottom: 10px;
+      }
+
+      .nav {
+       width: 300px;
+       position: absolute;
+       -webkit-transform: translate(-300px,0);
+       transform: translate(-300px,0);
+       transition: transform 0.3s ease;
+      }
+
+      .nav.open {
+        -webkit-transform: translate(0,0);
+        transform: translate(0,0);
+
+      }
+
+      a#menu svg{
+
+      width: 40px;
+
+      }
+
+
+      @media screen and (min-width: 600px) {
+
+        .nav {
+          position:relative;
+          transform: translate(0,0);
+        }
+
+        body{
+          display: flex ;
+          flex-flow: row nowrap;
+        }
+
+        .mainview{
+          width: auto;
+          flex-grow: 1;
+        }
+
+        a#menu svg{
+
+          width: 40px;
+
+        }
+
+      }
+
+   </style>
+
+  </head>
+  <body>
+
+  <script type="text/javascript" src="js/app.js"></script>
+  <script type="text/javascript"  src='js/knockout-3.4.0.js'></script>
+
+
+          <nav  id="drawer">
+          <h2> Central Florida Attractions</h2>
+          <hr>
+          <div class="input-group">
+               <input type="search"   placeholder=" Filter Locations" data-bind="textInput: userInput, event: {keyup: markerFilter}">
+          </div>
+
+
+         <div class="list-view">
+          <ul style= "list-style-type:none" data-bind= "foreach: markerInfo">
+            <li  data-bind="text: name, click:$parent.displayInfo"> </li>
+          </ul>
+          </div>
+
+         </nav>
+
+          <main class="mainview">
+
+          <a id="menu">
+
+           <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 24 24">
+              <path d= "M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"> </path>
+          </svg>
+          </a>
+          <p> Click on menu icon to open the drawer </p>
+
+          <div id ="map">
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJJk3O9eGR57U6cz0bSPDf6B_ekG-thRw&callback=initMap"async defer></script>
+
+          </div>
+
+
+          </main>
+
+
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+
+      var menu = document.querySelector('#menu');
+      var mainview= document.querySelector('#mainview');
+      var drawer= document.querySelector('#drawer');
+
+        menu.addEventListener('click', function(e) {
+        drawer.classList.toggle('open');
+        e.stopPropagation();
+        });
+
+        mainview.addEventListener('click', function(e) {
+          drawer.classList.remove('open');
+
+       });
+
+    </script>
+
+  </body>
+</html>

@@ -1,51 +1,72 @@
 var parkData = [
 
 {
-
     lat:"28.417823",
     lng:"-81.581203",
     address:"  ",
     name:"DisneyWorld"
-
 },
 
-
 {
-
     lat:"28.410515",
     lng:"-81.464874",
     address:"  ",
     name:"Seaworld"
-
 },
 
-
 {
-
     lat:"28.476747",
     lng:"-81.473222",
     address:"  ",
     name:"Universal Studios"
-
 },
 
 {
-
     lat:"28.033631",
     lng:"-82.420659",
     address:"  ",
     name:"Busch Gardens"
-
 },
 
 {
-
     lat:"28.460525",
     lng:"-81.462871",
     address:"  ",
     name:"Wet and Wild"
+},
+
+{
+    lat:"28.355744",
+    lng:"-81.403874",
+    address:"  ",
+    name:"Gatorland"
+
+},
+
+{
+    lat:"29.228699",
+    lng:"-81.007713",
+    address:"  ",
+    name:"Daytona Beach Boardwalk"
+
+},
+
+
+{
+    lat:"28.523273",
+    lng:"-80.68161",
+    address:"  ",
+    name:"Kennedy Space Center Visitor Complex"
+},
+
+{
+    lat:"28.320007",
+    lng:"-80.607551",
+    address:"  ",
+    name:"Cocoa Beach"
 
 }
+
 
 ];
 
@@ -56,8 +77,10 @@ var infoWindow;
 var initMap = function(){
 
 var mapOptions = {
-      center: new google.maps.LatLng(28.378110,-81.569366),
-      zoom: 10,
+      center: new google.maps.LatLng(28.746693,-81.981354),
+      zoom: 9,
+      draggable: false,
+      mapTypeId:google.maps.MapTypeId.ROADMAP,
 
 }; //close mapOptions
 
@@ -86,9 +109,6 @@ var ViewModel = function() {
 
 	var self = this;
 	var bounds = new google.maps.LatLngBounds();
-
-    //var openWeatherMapurl ='';
-
 
 // contains all marker objects
     self.allParks = [];
@@ -136,7 +156,6 @@ var ViewModel = function() {
            }); //close openWeatherMapURL
 
 
-
              $.getJSON(openWeatherMapUrl, function(info) {
 
              	var temp = info.main.temp;
@@ -154,14 +173,12 @@ var ViewModel = function() {
 
                 });//close getJSON
 
-
        };//close Content
 
      }; //close generateContent
 
 
 self.createMarkers = function() {
-
 
 
   for (var i = 0; i < self.markerInfo().length; i++) {
@@ -174,7 +191,6 @@ self.createMarkers = function() {
         bounds.extend(myLatlng);
 
         google.maps.event.addListener(marker, "click", self.generateContent(i,marker));
-
 
     };//close for loop
 
@@ -228,8 +244,6 @@ self.markerFilter = function() {
     window.addEventListener('resize', function(e) {
     map.fitBounds( bounds)
     });
-
-
 
 }; //end of ViewModel function
 
