@@ -157,6 +157,13 @@ var ViewModel = function() {
                 infoWindow.setContent(windowContent);
                 infoWindow.open(map, marker);
 
+            }).fail(function(e) {
+
+                windowContent = ('Error has occured. Weather data not available');
+                self.toggleBounce(marker);
+                infoWindow.setContent(windowContent);
+                infoWindow.open(map, marker);
+
             }); //close getJSON
 
         }; //close Content
