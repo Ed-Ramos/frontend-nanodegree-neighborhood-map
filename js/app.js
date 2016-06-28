@@ -1,250 +1,228 @@
 var parkData = [
 
-{
-    lat:"28.417823",
-    lng:"-81.581203",
-    address:"  ",
-    name:"DisneyWorld"
-},
+    {
+        lat: "28.417823",
+        lng: "-81.581203",
+        name: "DisneyWorld"
+    },
 
-{
-    lat:"28.410515",
-    lng:"-81.464874",
-    address:"  ",
-    name:"Seaworld"
-},
+    {
+        lat: "28.410515",
+        lng: "-81.464874",
+        name: "Seaworld"
+    },
 
-{
-    lat:"28.476747",
-    lng:"-81.473222",
-    address:"  ",
-    name:"Universal Studios"
-},
+    {
+        lat: "28.476747",
+        lng: "-81.473222",
+        name: "Universal Studios"
+    },
 
-{
-    lat:"28.033631",
-    lng:"-82.420659",
-    address:"  ",
-    name:"Busch Gardens"
-},
+    {
+        lat: "28.033631",
+        lng: "-82.420659",
+        name: "Busch Gardens"
+    },
 
-{
-    lat:"28.460525",
-    lng:"-81.462871",
-    address:"  ",
-    name:"Wet and Wild"
-},
+    {
+        lat: "28.460525",
+        lng: "-81.462871",
+        name: "Wet and Wild"
+    },
 
-{
-    lat:"28.355744",
-    lng:"-81.403874",
-    address:"  ",
-    name:"Gatorland"
+    {
+        lat: "28.355744",
+        lng: "-81.403874",
+        name: "Gatorland"
+    },
 
-},
+    {
+        lat: "29.228699",
+        lng: "-81.007713",
+        name: "Daytona Beach Boardwalk"
+    },
 
-{
-    lat:"29.228699",
-    lng:"-81.007713",
-    address:"  ",
-    name:"Daytona Beach Boardwalk"
+    {
+        lat: "28.523273",
+        lng: "-80.68161",
+        name: "Kennedy Space Center Visitor Complex"
+    },
 
-},
-
-
-{
-    lat:"28.523273",
-    lng:"-80.68161",
-    address:"  ",
-    name:"Kennedy Space Center Visitor Complex"
-},
-
-{
-    lat:"28.320007",
-    lng:"-80.607551",
-    address:"  ",
-    name:"Cocoa Beach"
-
-}
-
+    {
+        lat: "28.320007",
+        lng: "-80.607551",
+        name: "Cocoa Beach"
+    }
 
 ];
-
 
 var map;
 var infoWindow;
 
-var initMap = function(){
+var initMap = function() {
 
-var mapOptions = {
-      center: new google.maps.LatLng(28.746693,-81.981354),
-      zoom: 9,
-      draggable: false,
-      mapTypeId:google.maps.MapTypeId.ROADMAP,
+    var mapOptions = {
+        center: new google.maps.LatLng(28.746693, -81.981354),
+        zoom: 9,
+        draggable: false,
+        scrollwheel: false,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
 
-}; //close mapOptions
+    }; //close mapOptions
 
- map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
- infoWindow = new google.maps.InfoWindow();
+    infoWindow = new google.maps.InfoWindow();
 
+    //This will add these needed properties to each of the park data above
+    parkData.forEach(function(place) {
 
-//This will add these needed properties to each of the park data above
-parkData.forEach(function(place){
+        place.map = map;
+        place.position = new google.maps.LatLng(place.lat, place.lng);
+        place.title = place.name;
+        place.animation = google.maps.Animation.DROP;
 
-     place.map = map;
-     place.position = new google.maps.LatLng(place.lat,place.lng);
-     place.title = place.name;
-     place.animation = google.maps.Animation.DROP;
+    }); //close parkData
 
-}); //close parkData
-
-   ko.applyBindings(new ViewModel());
+    ko.applyBindings(new ViewModel());
 
 }; //close of InitMap
 
 
-
 var ViewModel = function() {
 
-	var self = this;
-	var bounds = new google.maps.LatLngBounds();
+    var self = this;
+    var bounds = new google.maps.LatLngBounds();
 
-// contains all marker objects
+    // contains all marker objects
     self.allParks = [];
 
-// this observable will track what the user enters in text field box
+    // this observable will track what the user enters in text field box
     self.userInput = ko.observable('');
 
-//this observable array contains the information for all the parks
+    //this observable array contains the information for all the parks
     self.markerInfo = ko.observableArray();
 
-// This observable array contains all the weather data returned from API call
+    // This observable array contains all the weather data returned from API call
     //self.weatherData = ko.observableArray();
 
-// loading array with the park information
+    // loading array with the park information
     parkData.forEach(function(place) {
         self.markerInfo.push(place);
-});//close parkData
+    }); //close parkData
 
-
-     self.toggleBounce=function(marker){
-         if (marker.getAnimation() !==null) {
-             marker.setAnimation(null);
-         } else {
+    self.toggleBounce = function(marker) {
+        if (marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+        } else {
 
             marker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){marker.setAnimation(null); }, 1600);
+            setTimeout(function() {
+                marker.setAnimation(null);
+            }, 1600);
 
-             }; //close else
+        }; //close else
 
-            };//close togglBounce
-
-
-     self.generateContent = function(x,marker) {
-
-
-      return function Content(){
-
-             var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
-             openWeatherMapUrl += $.param({
-            'lat': self.markerInfo()[x].lat,
-            'lon': self.markerInfo()[x].lng,
-            'units': "imperial",
-            'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
-
-           }); //close openWeatherMapURL
+    }; //close togglBounce
 
 
-             $.getJSON(openWeatherMapUrl, function(info) {
+    //This function generates the infoWindow content. It generates the url for the openWeathermap
+    //service. It calls the API and recieves JSON information. Three weather variables get
+    //obtained and used for the infoWindow content.
 
-             	var temp = info.main.temp;
-             	var condition = info.weather[0].description;
-             	var humidity = info.main.humidity;
-             	var windowContent = ('<p><b>Current Temperature is:</b> ' + temp.toString() +
-                                      'F </P>' +'<p><b> Current Humidity is:</b> ' + humidity.toString() +
-                                      '% </p>' +'<p><b> Weather Conditions is:</b> ' + condition
-             		                 );
+    self.generateContent = function(x, marker) {
+
+        return function Content() {
+
+            var openWeatherMapUrl = "http://api.openweathermap.org/data/2.5/weather?";
+            openWeatherMapUrl += $.param({
+                'lat': self.markerInfo()[x].lat,
+                'lon': self.markerInfo()[x].lng,
+                'units': "imperial",
+                'APPID': "7b81fdc7f0841851f31a5461065c5bc5"
+
+            }); //close openWeatherMapURL
+
+            $.getJSON(openWeatherMapUrl, function(info) {
+
+                var temp = info.main.temp;
+                var condition = info.weather[0].description;
+                var humidity = info.main.humidity;
+                var windowContent = ('<p><b>Current Temperature is:</b> ' + temp.toString() +
+                    'F </P>' + '<p><b> Current Humidity is:</b> ' + humidity.toString() +
+                    '% </p>' + '<p><b> Weather Conditions is:</b> ' + condition
+                );
 
                 self.toggleBounce(marker);
-
                 infoWindow.setContent(windowContent);
-        	    infoWindow.open(map,marker);
+                infoWindow.open(map, marker);
 
-                });//close getJSON
+            }); //close getJSON
 
-       };//close Content
+        }; //close Content
 
-     }; //close generateContent
+    }; //close generateContent
 
+    //This funtion creates the markers.  It also calls the function that generates the InfoWindow
+    //content if a marker is clicked
+    self.createMarkers = function() {
 
-self.createMarkers = function() {
+        for (var i = 0; i < self.markerInfo().length; i++) {
 
+            var data = self.markerInfo()[i];
+            var myLatlng = data.position;
+            var marker = new google.maps.Marker(data);
 
-  for (var i = 0; i < self.markerInfo().length; i++) {
+            self.allParks.push(marker);
+            bounds.extend(myLatlng);
 
-        var data = self.markerInfo()[i];
-        var myLatlng = data.position;
-        var marker = new google.maps.Marker(data);
+            google.maps.event.addListener(marker, "click", self.generateContent(i, marker));
 
-        self.allParks.push(marker);
-        bounds.extend(myLatlng);
+        }; //close for loop
 
-        google.maps.event.addListener(marker, "click", self.generateContent(i,marker));
+    }; //close createMarkes
 
-    };//close for loop
+    self.createMarkers();
 
-};//close createMarkes
+    //This funtion is called when user clicks a location on the drawer list. It obtains the
+    //prope marker and uses an event trigger to simulate that the marker was clicked
+    self.displayInfo = function(marker) {
 
-self.createMarkers();
+        var index = self.markerInfo().indexOf(marker);
+        var markerObject = self.allParks[index];
 
+        google.maps.event.trigger(markerObject, "click", self.generateContent(index, markerObject));
 
-self.displayInfo = function(marker) {
+    }; //close displayInfo
 
- var index = self.markerInfo().indexOf(marker);
- var markerObject = self.allParks[index];
+    //This funtion implements the filter property. It removes all markers from array and map
+    //It then adds the appropiate markers back to array depending if there is a match. Then
+    //markers are created and added to map
+    self.markerFilter = function() {
 
- //self.generateContent(index,markerObject);
+        var searchInput = self.userInput().toLowerCase();
+        self.markerInfo.removeAll();
+        self.allParks.forEach(function(marker) {
+            marker.setMap(null);
+        });
 
- google.maps.event.trigger(markerObject, "click", self.generateContent(index,markerObject));
+        self.allParks = [];
+        parkData.forEach(function(place) {
 
- console.log( markerObject.name+  " was clicked " + "the index is "+index);
+            if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
 
+                self.markerInfo.push(place);
+            }
 
-}; //close displayInfo
+        });
 
+        self.createMarkers();
 
-self.markerFilter = function() {
+    }; //close markerFilter
 
-	var searchInput = self.userInput().toLowerCase();
-	self.markerInfo.removeAll();
-	self.allParks.forEach(function(marker) {
-         marker.setMap(null);
-
-	});
-
-	self.allParks = [];
-	parkData.forEach(function(place) {
-
-      if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
-
-      	     self.markerInfo.push(place);
-      }
-
-
-	});
-
-	self.createMarkers();
-
-
-};//close markerFilter
-
-
-//listen for resizing if window and adjust map bounds
+    //listen for resizing if window and adjust map bounds
     window.addEventListener('resize', function(e) {
-    map.fitBounds( bounds)
+        map.fitBounds(bounds)
     });
 
 }; //end of ViewModel function
-
-
