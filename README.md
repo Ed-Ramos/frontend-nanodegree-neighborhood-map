@@ -7,6 +7,7 @@ The Google map is loaded when clicking the index.html file.  The map is centered
 
 ###The Weather API
 The site OpenWeatherMap.org is used to get current weather data. Using the Lat/Lon from the locations, an API call is used to get the weather data in JSON format.  The data is parsed and the current temperature, current humidity, and weather condition is extracted and placed in InfoWindow.
+If the API call fails, an error message is populated in infoWindow indicating that weather data is not available.
 
 ###The List
 The locations can also be seen by clicking the hamburger menu icon in the upper right corner.  When menu is clicked, a slider drawer shows up on left hand side with a list of the locations.  When the mouse is moved over a location, the location is highlighted.  When a location is clicked from list, it will cause the corresponding marker to bounce and InfoWindow to open. Clicking the menu if the slider drawer is open will cause it to close.
