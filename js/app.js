@@ -67,6 +67,7 @@ var initMap = function() {
         draggable: false,
         scrollwheel: false,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
+        disableDoubleClickZoom: true,
 
     }; //close mapOptions
 
@@ -190,6 +191,7 @@ var ViewModel = function() {
     }; //close createMarkes
 
     self.createMarkers();
+    map.fitBounds(bounds)
 
     //This funtion is called when user clicks a location on the drawer list. It obtains the
     //prope marker and uses an event trigger to simulate that the marker was clicked
