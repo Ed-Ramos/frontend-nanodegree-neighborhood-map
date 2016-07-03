@@ -64,8 +64,8 @@ var initMap = function() {
     var mapOptions = {
         center: new google.maps.LatLng(28.746693, -81.981354),
         zoom: 9,
-        draggable: false,
-        scrollwheel: false,
+        draggable: true,
+        scrollwheel: true,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         disableDoubleClickZoom: true,
 
@@ -88,6 +88,13 @@ var initMap = function() {
     ko.applyBindings(new ViewModel());
 
 }; //close of InitMap
+
+var mapError = function() {
+
+    alert("Oops. Sorry but a map loading error has occured");
+
+
+}; //close mapError
 
 
 var ViewModel = function() {
@@ -120,9 +127,9 @@ var ViewModel = function() {
             marker.setAnimation(google.maps.Animation.BOUNCE);
             setTimeout(function() {
                 marker.setAnimation(null);
-            }, 1600);
+            }, 2800);
 
-        }; //close else
+        } //close else
 
     }; //close togglBounce
 
@@ -144,22 +151,27 @@ var ViewModel = function() {
 
             }); //close openWeatherMapURL
 
+            infoWindow.open(map, marker);
+
             $.getJSON(openWeatherMapUrl, function(info) {
 
                 var temp = info.main.temp;
                 var condition = info.weather[0].description;
                 var humidity = info.main.humidity;
-                var windowContent = ('<p><b>Current Temperature is:</b> ' + temp.toString() +
+                var windowContent = ('<p> Welcome to ' + self.markerInfo()[x].name +'<p>' +
+                    '<p><b>Current Temperature is:</b> ' + temp.toString() +
                     'F </P>' + '<p><b> Current Humidity is:</b> ' + humidity.toString() +
-                    '% </p>' + '<p><b> Weather Conditions is:</b> ' + condition
+                    '% </p>' + '<p><b> Weather Conditions is:</b> ' + condition + '<p>' +
+                    '<p><i> Powered by OpenWeatherMap.org<i> <p>'
                 );
 
-                self.toggleBounce(marker);
                 infoWindow.setContent(windowContent);
-                infoWindow.open(map, marker);
+                map.panTo(marker.getPosition());
+                self.toggleBounce(marker);
 
             }).fail(function(e) {
 
+                map.panTo(marker.getPosition());
                 windowContent = ('Error has occured. Weather data not available');
                 self.toggleBounce(marker);
                 infoWindow.setContent(windowContent);
@@ -186,12 +198,12 @@ var ViewModel = function() {
 
             google.maps.event.addListener(marker, "click", self.generateContent(i, marker));
 
-        }; //close for loop
+        } //close for loop
 
     }; //close createMarkes
 
     self.createMarkers();
-    map.fitBounds(bounds)
+    map.fitBounds(bounds);
 
     //This funtion is called when user clicks a location on the drawer list. It obtains the
     //prope marker and uses an event trigger to simulate that the marker was clicked
@@ -211,17 +223,16 @@ var ViewModel = function() {
 
         var searchInput = self.userInput().toLowerCase();
         self.markerInfo.removeAll();
-        self.allParks.forEach(function(marker) {
-            marker.setMap(null);
-        });
+        self.allParks.forEach(function(place) {
+            place.setMap(null);
+          });
 
         self.allParks = [];
         parkData.forEach(function(place) {
 
-            if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
-
+        if (place.name.toLowerCase().indexOf(searchInput) !== -1) {
                 self.markerInfo.push(place);
-            }
+        }
 
         });
 
@@ -231,7 +242,7 @@ var ViewModel = function() {
 
     //listen for resizing if window and adjust map bounds
     window.addEventListener('resize', function(e) {
-        map.fitBounds(bounds)
+        map.fitBounds(bounds);
     });
 
 }; //end of ViewModel function
